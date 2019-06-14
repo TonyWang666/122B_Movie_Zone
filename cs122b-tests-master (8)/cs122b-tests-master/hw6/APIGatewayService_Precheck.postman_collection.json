@@ -1,0 +1,2021 @@
+{
+	"info": {
+		"_postman_id": "53df5772-48a2-4105-abed-5ddceb8de8d6",
+		"name": "APIGatewayService",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Non-registered user fail to login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2ad5a786-e956-4eba-b4f9-5c1cb7be4c2e",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.expect(pm.response.code).eql(204);",
+							"});",
+							"",
+							"let transactionId = pm.response.headers.get(\"transactionID\");",
+							"let requestDelay = pm.response.headers.get(\"requestDelay\");",
+							"    ",
+							"pm.test(\"Response contains a transactionID\", function () {",
+							"    pm.expect(transactionId).not.eql(null);",
+							"    pm.expect(transactionId).not.eql(\"\");",
+							"});",
+							"",
+							"pm.test(\"Response body should be empty\", function () {",
+							"    pm.response.to.not.be.withBody;",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 500ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);",
+							"});",
+							"",
+							"endPointTests = (response) => {",
+							"",
+							"    pm.test(\"Status code is 200\", function () {",
+							"        pm.expect(response.code).eql(200);",
+							"    });",
+							"    ",
+							"    pm.test(\"Response has a body in json format\", function () {",
+							"        pm.expect(response.json()).not.eql(null);",
+							"    });",
+							"    ",
+							"    pm.test('Response matches the required schema', function() {",
+							"        pm.expect(tv4.validate(response.json(), standardReturnSchema,false, true)).to.be.true;",
+							"    });",
+							"    ",
+							"    pm.test(\"Response contains an error message\", function () {",
+							"    let jsonData = response.json();",
+							"    pm.expect(jsonData.resultCode).eql(14);",
+							"",
+							"    pm.expect(jsonData.message).not.eql(null);",
+							"    pm.expect(jsonData.message).to.contain(\"User not found\");",
+							"    ",
+							"});",
+							"    ",
+							"    pm.test(\"Response time is less than 1000ms\", function () {",
+							"        pm.expect(response.responseTime).to.be.below(1000);",
+							"    });",
+							"",
+							"}",
+							"",
+							"(report = (n) => {",
+							"    if (n < 0) return endPointTests(null);",
+							"    ",
+							"    else  setTimeout(()=>{",
+							"        pm.sendRequest(requestBuilder(\"/api/g/report\", \"GET\", transactionId, pm.variables.get(\"email\"), pm.variables.get(\"sessionID\"),{}), (err, res) => {",
+							"                if (res.code == 204) report(n-1);",
+							"                else endPointTests(res)",
+							"        });",
+							"    }, requestDelay || 500)",
+							"})(numOfPulls);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "2682595f-41dc-461c-95d6-6292f27d8354",
+						"exec": [
+							"pm.variables.set(\"creditCardId\", JSON.stringify(randomDigit(19)));",
+							"pm.variables.set(\"firstName\", JSON.stringify(randomString(10)));",
+							"pm.variables.set(\"lastName\", JSON.stringify(randomString(10)));",
+							"pm.variables.set(\"creditCardId2\", JSON.stringify(randomDigit(19)));",
+							"pm.variables.set(\"firstName2\", JSON.stringify(randomString(10)));",
+							"pm.variables.set(\"lastName2\", JSON.stringify(randomString(10)));",
+							"pm.variables.set(\"email\", randomString(10) + \"@\" + randomString(5) + \".com\");",
+							"pm.variables.set(\"address\", JSON.stringify(randomString(30)));",
+							"",
+							"pm.variables.set(\"password\", JSON.stringify([randomString(1), \".\", \"a\", \"A\", \"1\", randomString(1),randomString(1),randomString(1),randomString(1)].sort()));",
+							"",
+							"monthInt = randomInt(1,12);",
+							"month = monthInt.toString();",
+							"if (monthInt < 10) month = \"0\" + month;",
+							"",
+							"dayInt = randomInt(1,28).toString();",
+							"day = dayInt.toString();",
+							"if (dayInt < 10) day = \"0\" + day;",
+							"pm.variables.set(\"date\", JSON.stringify ( randomInt(2020, 2024).toString()+ \"-\" + month + \"-\" + day));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\": {{password}}\n}"
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/api/g/idm/login",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"g",
+						"idm",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User registered successfully",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2ad5a786-e956-4eba-b4f9-5c1cb7be4c2e",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.expect(pm.response.code).eql(204);",
+							"});",
+							"",
+							"let transactionId = pm.response.headers.get(\"transactionID\");",
+							"let requestDelay = pm.response.headers.get(\"requestDelay\");",
+							"",
+							"    ",
+							"pm.test(\"Response contains a transactionID\", function () {",
+							"    pm.expect(transactionId).not.eql(null);",
+							"    pm.expect(transactionId).not.eql(\"\");",
+							"});",
+							"",
+							"pm.test(\"Response body should be empty\", function () {",
+							"    pm.response.to.not.be.withBody;",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 500ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);",
+							"});",
+							"",
+							"endPointTests = (response) => {",
+							"",
+							"    pm.test(\"Status code is 200\", function () {",
+							"        pm.expect(response.code).eql(200);",
+							"    });",
+							"    ",
+							"    pm.test(\"Response has a body in json format\", function () {",
+							"        pm.expect(response.json()).not.eql(null);",
+							"    });",
+							"    ",
+							"    pm.test('Response matches the required schema', function() {",
+							"        pm.expect(tv4.validate(response.json(), standardReturnSchema,false, true)).to.be.true;",
+							"    });",
+							"    ",
+							"    pm.test(\"Response contains a success message\", function () {",
+							"        let jsonData = response.json();",
+							"        pm.expect(jsonData.resultCode).eql(110);",
+							"    ",
+							"        pm.expect(jsonData.message).not.eql(null);",
+							"        pm.expect(jsonData.message).to.contain(\"User registered successfully\");",
+							"        ",
+							"    });",
+							"    ",
+							"    pm.test(\"Response time is less than 1000ms\", function () {",
+							"        pm.expect(response.responseTime).to.be.below(1000);",
+							"    });",
+							"",
+							"}",
+							"",
+							"(report = (n) => {",
+							"    if (n < 0) return endPointTests(null);",
+							"    else  setTimeout(()=>{",
+							"        pm.sendRequest(requestBuilder(\"/api/g/report\", \"GET\", transactionId, pm.variables.get(\"email\"), pm.variables.get(\"sessionID\"),{}), (err, res) => {",
+							"                if (res.code == 204) report(n-1);",
+							"                else endPointTests(res)",
+							"        });",
+							"    }, requestDelay || 500)",
+							"})(numOfPulls);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b6a9d622-1ecf-4b7f-b1d1-460087c495d9",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\": {{password}}\n}"
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/api/g/idm/register",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"g",
+						"idm",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Should not process billing without a session",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "67dd3595-caec-4482-a2e4-a6d50bf135cf",
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.expect(pm.response.code).eql(400);",
+							"});",
+							"    ",
+							"pm.test(\"Response has a body in json format\", function () {",
+							"    pm.expect(pm.response.json()).not.eql(null);",
+							"});",
+							"    ",
+							"pm.test('Response matches the required schema', function() {",
+							"    valid = tv4.validate(pm.response.json(), standardReturnSchema, false, true);",
+							"    if (!valid) console.log(tv4.error);",
+							"    pm.expect(valid).to.be.true;",
+							"    ",
+							"});",
+							" ",
+							"pm.test(\"Response contains an error message [Session Test]\", function () {",
+							"    let jsonData = pm.response.json();",
+							"    pm.expect(jsonData.resultCode).eql(-17);",
+							"    pm.expect(jsonData).not.eql(null);",
+							"    pm.expect(jsonData.message).not.eql(null);",
+							"    pm.expect(jsonData.message).to.contain(\"SessionID not provided in request header\");",
+							"    ",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "email",
+						"value": "{{email}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": {{creditCardId2}},\n    \"firstName\": {{firstName2}},\n    \"lastName\": {{lastName2}},\n    \"expiration\": {{date}}\n}\n"
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/api/g/billing/creditcard/insert",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"g",
+						"billing",
+						"creditcard",
+						"insert"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User login successfully",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2ad5a786-e956-4eba-b4f9-5c1cb7be4c2e",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.expect(pm.response.code).eql(204);",
+							"});",
+							"",
+							"let transactionId = pm.response.headers.get(\"transactionID\");",
+							"let requestDelay = pm.response.headers.get(\"requestDelay\");",
+							"    ",
+							"pm.test(\"Response contains a transactionID\", function () {",
+							"    pm.expect(transactionId).not.eql(null);",
+							"    pm.expect(transactionId).not.eql(\"\");",
+							"});",
+							"",
+							"pm.test(\"Response body should be empty\", function () {",
+							"    pm.response.to.not.be.withBody;",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 500ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);",
+							"});",
+							"",
+							"endPointTests = (response) => {",
+							"    pm.test(\"Status code is 200\", function () {",
+							"        pm.expect(response.code).eql(200);",
+							"    });",
+							"    ",
+							"    pm.test(\"Response has a body in json format\", function () {",
+							"        pm.expect(response.json()).not.eql(null);",
+							"    });",
+							"    ",
+							"    pm.test('Response matches the required schema', function() {",
+							"        valid = tv4.validate(response.json(), loginReturnSchema, false, true);",
+							"        if (!valid) console.log(tv4.error);",
+							"        pm.expect(valid).to.be.true;",
+							"    ",
+							"    });",
+							"    ",
+							"    pm.test(\"Response contains a success message\", function () {",
+							"        let jsonData = response.json();",
+							"        pm.expect(jsonData.resultCode).eql(120);",
+							"    ",
+							"        pm.expect(jsonData.message).not.eql(null);",
+							"        pm.expect(jsonData.message).to.contain(\"User logged in successfully\");",
+							"        pm.expect(jsonData.sessionID).not.to.eql(null);",
+							"        pm.variables.set(\"sessionID\", jsonData.sessionID);",
+							"        ",
+							"    });",
+							"    ",
+							"    pm.test(\"Response time is less than 1000ms\", function () {",
+							"        pm.expect(response.responseTime).to.be.below(1000);",
+							"    });",
+							"}",
+							"",
+							"(report = (n) => {",
+							"    if (n < 0) return endPointTests(null);",
+							"    else  setTimeout(()=>{",
+							"        pm.sendRequest(requestBuilder(\"/api/g/report\", \"GET\", transactionId, pm.variables.get(\"email\"), pm.variables.get(\"sessionID\"),{}), (err, res) => {",
+							"                if (res.code == 204) report(n-1);",
+							"                else endPointTests(res)",
+							"        });",
+							"    }, requestDelay || 500)",
+							"})(numOfPulls);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b67c0121-e2b8-4e4e-9669-788a698e1672",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\":\"{{email}}\",\n\t\"password\":{{password}}\n}"
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/api/g/idm/login",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"g",
+						"idm",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Credit card inserted successfully",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "67dd3595-caec-4482-a2e4-a6d50bf135cf",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.expect(pm.response.code).eql(204);",
+							"});",
+							"    ",
+							"pm.test(\"Response contains a transactionID\", function () {",
+							"    pm.response.to.have.header(\"transactionID\");",
+							"});",
+							"",
+							"pm.test(\"Response contains a sessionID\", function () {",
+							"    pm.response.to.have.header(\"sessionID\");",
+							"});",
+							"",
+							"let transactionId = pm.response.headers.get(\"transactionID\");",
+							"let requestDelay = pm.response.headers.get(\"requestDelay\");",
+							"pm.variables.unset(\"sessionID\");",
+							"pm.variables.set(\"sessionID\", pm.response.headers.get(\"sessionID\"));",
+							"",
+							"pm.test(\"Response body should be empty\", function () {",
+							"    pm.response.to.not.be.withBody;",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 500ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);",
+							"});",
+							"",
+							"",
+							"endPointTests = (response) => {",
+							"    pm.test(\"Status code is 200\", function () {",
+							"        pm.expect(response.code).eql(200);",
+							"    });",
+							"    ",
+							"    pm.test(\"Response has a body in json format\", function () {",
+							"        pm.expect(response.json()).not.eql(null);",
+							"    });",
+							"    ",
+							"pm.test('Response matches the required schema', () => {",
+							"    pm.expect(tv4.validate(response.json(), standardReturnSchema, false, true)).to.be.true;",
+							"});",
+							"",
+							"pm.test(\"Response contains a success message\", () => {",
+							"    let jsonData = response.json();",
+							"    pm.expect(jsonData.resultCode).eql(3200);",
+							"",
+							"    pm.expect(jsonData.message).not.eql(null);",
+							"    pm.expect(jsonData.message).to.contain(\"Credit card inserted successfully\");",
+							"     ",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1000ms\", function () {",
+							"    pm.expect(response.responseTime).to.be.below(1000);",
+							"});",
+							"}",
+							"",
+							"(report = (n) => {",
+							"    if (n < 0) return endPointTests(null);",
+							"    else  setTimeout(()=>{",
+							"        pm.sendRequest(requestBuilder(\"/api/g/report\", \"GET\", transactionId, pm.variables.get(\"email\"), pm.variables.get(\"sessionID\"),{}), (err, res) => {",
+							"                if (res.code == 204) report(n-1);",
+							"                else endPointTests(res)",
+							"        });",
+							"    }, requestDelay || 500)",
+							"})(numOfPulls);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "email",
+						"value": "{{email}}",
+						"type": "text"
+					},
+					{
+						"key": "sessionID",
+						"value": "{{sessionID}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": {{creditCardId}},\n    \"firstName\": {{firstName}},\n    \"lastName\": {{lastName}},\n    \"expiration\": {{date}}\n}\n"
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/api/g/billing/creditcard/insert",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"g",
+						"billing",
+						"creditcard",
+						"insert"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Customer inserted successfully",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "67dd3595-caec-4482-a2e4-a6d50bf135cf",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.expect(pm.response.code).eql(204);",
+							"});",
+							"",
+							"let transactionId = pm.response.headers.get(\"transactionID\");",
+							"let requestDelay = pm.response.headers.get(\"requestDelay\");",
+							"pm.variables.unset(\"sessionID\");",
+							"pm.variables.set(\"sessionID\", pm.response.headers.get(\"sessionID\"));",
+							"    ",
+							"pm.test(\"Response contains a transactionID\", function () {",
+							"    pm.response.to.have.header(\"transactionID\");",
+							"});",
+							"",
+							"pm.test(\"Response contains a sessionID\", function () {",
+							"    pm.response.to.have.header(\"sessionID\");",
+							"});",
+							"",
+							"pm.test(\"Response body should be empty\", function () {",
+							"    pm.response.to.not.be.withBody;",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 500ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);",
+							"});",
+							"",
+							"endPointTests = (response) => {",
+							"    pm.test(\"Status code is 200\", function () {",
+							"        pm.expect(response.code).eql(200);",
+							"    });",
+							"    ",
+							"    pm.test(\"Response has a body in json format\", function () {",
+							"        pm.expect(response.json()).not.eql(null);",
+							"    });",
+							"    ",
+							"pm.test('Response matches the required schema', () => {",
+							"    pm.expect(tv4.validate(response.json(), standardReturnSchema, false, true)).to.be.true;",
+							"});",
+							"",
+							"pm.test(\"Response contains a success message\", () => {",
+							"    let jsonData = response.json();",
+							"    pm.expect(jsonData.resultCode).eql(3300);",
+							"",
+							"    pm.expect(jsonData.message).not.eql(null);",
+							"    pm.expect(jsonData.message).to.contain(\"Customer inserted successfully\");",
+							"     ",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1000ms\", function () {",
+							"    pm.expect(response.responseTime).to.be.below(1000);",
+							"});",
+							"}",
+							"",
+							"(report = (n) => {",
+							"    if (n < 0) return endPointTests(null);",
+							"    else  setTimeout(()=>{",
+							"        pm.sendRequest(requestBuilder(\"/api/g/report\", \"GET\", transactionId, pm.variables.get(\"email\"), pm.variables.get(\"sessionID\"),{}), (err, res) => {",
+							"                if (res.code == 204) report(n-1);",
+							"                else endPointTests(res)",
+							"        });",
+							"    }, requestDelay || 500)",
+							"})(numOfPulls);",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "email",
+						"value": "{{email}}",
+						"type": "text"
+					},
+					{
+						"key": "sessionID",
+						"value": "{{sessionID}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"{{email}}\",\n    \"firstName\": {{firstName}},\n    \"lastName\": {{lastName}},\n    \"ccId\": {{creditCardId}},\n    \"address\": {{address}}\n}\n"
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/api/g/billing/customer/insert",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"g",
+						"billing",
+						"customer",
+						"insert"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify Shopping Cart to be Empty",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2ad5a786-e956-4eba-b4f9-5c1cb7be4c2e",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.expect(pm.response.code).eql(204);",
+							"});",
+							"    ",
+							"pm.test(\"Response contains a transactionID\", function () {",
+							"    pm.response.to.have.header(\"transactionID\");",
+							"});",
+							"",
+							"pm.test(\"Response contains a sessionID\", function () {",
+							"    pm.response.to.have.header(\"sessionID\");",
+							"});",
+							"",
+							"let transactionId = pm.response.headers.get(\"transactionID\");",
+							"let requestDelay = pm.response.headers.get(\"requestDelay\");",
+							"pm.variables.unset(\"sessionID\");",
+							"pm.variables.set(\"sessionID\", pm.response.headers.get(\"sessionID\"));",
+							"",
+							"pm.test(\"Response body should be empty\", function () {",
+							"    pm.response.to.not.be.withBody;",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 500ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);",
+							"});",
+							"",
+							"",
+							"endPointTests = (response) => {",
+							"    pm.test(\"Status code is 200\", function () {",
+							"        pm.expect(response.code).eql(200);",
+							"    });",
+							"    ",
+							"    pm.test(\"Response has a body in json format\", function () {",
+							"        pm.expect(response.json()).not.eql(null);",
+							"    });",
+							"    ",
+							"pm.test('Response matches the required schema', () => {",
+							"    pm.expect(tv4.validate(response.json(), standardReturnSchema, false, true)).to.be.true;",
+							"});",
+							"",
+							"pm.test(\"Response contains an error message\", () => {",
+							"    let jsonData = response.json();",
+							"    pm.expect(jsonData.resultCode).eql(312);",
+							"",
+							"    pm.expect(jsonData.message).not.eql(null);",
+							"    pm.expect(jsonData.message).to.contain(\"Shopping item does not exist\");",
+							"     ",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1000ms\", function () {",
+							"    pm.expect(response.responseTime).to.be.below(1000);",
+							"});",
+							"}",
+							"",
+							"(report = (n) => {",
+							"    if (n < 0) return endPointTests(null);",
+							"    else  setTimeout(()=>{",
+							"        pm.sendRequest(requestBuilder(\"/api/g/report\", \"GET\", transactionId, pm.variables.get(\"email\"), pm.variables.get(\"sessionID\"),{}), (err, res) => {",
+							"                if (res.code == 204) report(n-1);",
+							"                else endPointTests(res)",
+							"        });",
+							"    }, requestDelay || 500)",
+							"})(numOfPulls);",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "email",
+						"value": "{{email}}",
+						"type": "text"
+					},
+					{
+						"key": "sessionID",
+						"value": "{{sessionID}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \n   \"email\": \"{{email}}\"\n} \n"
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/api/g/billing/cart/retrieve",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"g",
+						"billing",
+						"cart",
+						"retrieve"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Shopping cart item1 inserted successfully",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2ad5a786-e956-4eba-b4f9-5c1cb7be4c2e",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.expect(pm.response.code).eql(204);",
+							"});",
+							"    ",
+							"pm.test(\"Response contains a transactionID\", function () {",
+							"    pm.response.to.have.header(\"transactionID\");",
+							"});",
+							"",
+							"pm.test(\"Response contains a sessionID\", function () {",
+							"    pm.response.to.have.header(\"sessionID\");",
+							"});",
+							"",
+							"let transactionId = pm.response.headers.get(\"transactionID\");",
+							"let requestDelay = pm.response.headers.get(\"requestDelay\");",
+							"pm.variables.unset(\"sessionID\");",
+							"pm.variables.set(\"sessionID\", pm.response.headers.get(\"sessionID\"));",
+							"",
+							"pm.test(\"Response body should be empty\", function () {",
+							"    pm.response.to.not.be.withBody;",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 500ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);",
+							"});",
+							"",
+							"endPointTests = (response) => {",
+							"    pm.test(\"Status code is 200\", function () {",
+							"        pm.expect(response.code).eql(200);",
+							"    });",
+							"    ",
+							"    pm.test(\"Response has a body in json format\", function () {",
+							"        pm.expect(response.json()).not.eql(null);",
+							"    });",
+							"    ",
+							"pm.test('Response matches the required schema', () => {",
+							"    pm.expect(tv4.validate(response.json(), standardReturnSchema, false, true)).to.be.true;",
+							"});",
+							"",
+							"pm.test(\"Response contains a success message\", () => {",
+							"    let jsonData = response.json();",
+							"    pm.expect(jsonData.resultCode).eql(3100);",
+							"",
+							"    pm.expect(jsonData.message).not.eql(null);",
+							"    pm.expect(jsonData.message).to.contain(\"Shopping cart item inserted successfully\");",
+							"     ",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1000ms\", function () {",
+							"    pm.expect(response.responseTime).to.be.below(1000);",
+							"});",
+							"}",
+							"",
+							"(report = (n) => {",
+							"    if (n < 0) return endPointTests(null);",
+							"    else  setTimeout(()=>{",
+							"        pm.sendRequest(requestBuilder(\"/api/g/report\", \"GET\", transactionId, pm.variables.get(\"email\"), pm.variables.get(\"sessionID\"),{}), (err, res) => {",
+							"                if (res.code == 204) report(n-1);",
+							"                else endPointTests(res)",
+							"        });",
+							"    }, requestDelay || 500)",
+							"})(numOfPulls);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "28b2baab-c97e-4a78-a9d1-539044c8b024",
+						"exec": [
+							"movies = [\"tt0195119\",",
+							"\"tt0195551\",",
+							"\"tt0195565\",",
+							"\"tt0196068\",",
+							"\"tt0196069\",",
+							"\"tt0196811\",",
+							"\"tt0196927\",",
+							"\"tt0197219\",",
+							"\"tt0197862\",",
+							"\"tt0197918\",",
+							"\"tt0197922\",",
+							"\"tt0197929\",",
+							"\"tt0197996\",",
+							"\"tt0198013\",",
+							"\"tt0198748\",",
+							"\"tt0198903\",",
+							"\"tt0199733\",",
+							"\"tt0199898\",",
+							"\"tt0200027\",",
+							"\"tt0200465\"",
+							"];",
+							"",
+							"m1 = movies[randomInt(0,9)];",
+							"m2 = movies[randomInt(10,19)];",
+							"m3 = movies[randomInt(0,19)];",
+							"q1 = randomInt(1,20);",
+							"q2 = randomInt(20,30);",
+							"q3 = randomInt(1,20);",
+							"q4 = randomInt(30,40);",
+							"q5 = randomInt(100,200);",
+							"",
+							"pm.variables.set(\"movie1\", JSON.stringify(m1));",
+							"pm.variables.set(\"movie2\", JSON.stringify(m2));",
+							"pm.variables.set(\"movie3\", JSON.stringify(m3));",
+							"pm.variables.set(\"quantity1\", JSON.stringify(q1));",
+							"pm.variables.set(\"quantity2\", JSON.stringify(q2));",
+							"pm.variables.set(\"quantity3\", JSON.stringify(q3));",
+							"pm.variables.set(\"quantity4\", JSON.stringify(q4));",
+							"pm.variables.set(\"quantity5\", JSON.stringify(q5));",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "email",
+						"value": "{{email}}",
+						"type": "text"
+					},
+					{
+						"key": "sessionID",
+						"value": "{{sessionID}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \n   \"email\": \"{{email}}\",\n   \"movieId\": {{movie1}},\n   \"quantity\": {{quantity1}}\n} \n"
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/api/g/billing/cart/insert",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"g",
+						"billing",
+						"cart",
+						"insert"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Should not process billing with an expired session",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2ad5a786-e956-4eba-b4f9-5c1cb7be4c2e",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).eql(200);",
+							"});",
+							"    ",
+							"pm.test(\"Response has a body in json format\", function () {",
+							"    pm.expect(pm.response.json()).not.eql(null);",
+							"});",
+							"    ",
+							"pm.test('Response matches the required schema', () => {",
+							"    pm.expect(tv4.validate(pm.response.json(), standardReturnSchema, false, true)).to.be.true;",
+							"});",
+							"",
+							"pm.test(\"Response contains an error message [Session Test]\", function () {",
+							"    let jsonData = pm.response.json();",
+							"    pm.expect(jsonData.resultCode).eql(131);",
+							"",
+							"    pm.expect(jsonData.message).not.eql(null);",
+							"    pm.expect(jsonData.message).to.contain(\"Session is expired\");",
+							"    ",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "398bd1e9-17a5-48a0-a8d8-f4636c587436",
+						"exec": [
+							"setTimeout(()=>{}, 5100)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "email",
+						"type": "text",
+						"value": "{{email}}"
+					},
+					{
+						"key": "sessionID",
+						"type": "text",
+						"value": "{{sessionID}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \n   \"email\": \"{{email}}\"\n} \n"
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/api/g/billing/cart/retrieve",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"g",
+						"billing",
+						"cart",
+						"retrieve"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User login successfully with a new session",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2ad5a786-e956-4eba-b4f9-5c1cb7be4c2e",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.expect(pm.response.code).eql(204);",
+							"});",
+							"",
+							"let transactionId = pm.response.headers.get(\"transactionID\");",
+							"let requestDelay = pm.response.headers.get(\"requestDelay\");",
+							"    ",
+							"pm.test(\"Response contains a transactionID\", function () {",
+							"    pm.expect(transactionId).not.eql(null);",
+							"    pm.expect(transactionId).not.eql(\"\");",
+							"});",
+							"",
+							"pm.test(\"Response body should be empty\", function () {",
+							"    pm.response.to.not.be.withBody;",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 500ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);",
+							"});",
+							"",
+							"endPointTests = (response) => {",
+							"    pm.test(\"Status code is 200\", function () {",
+							"        pm.expect(response.code).eql(200);",
+							"    });",
+							"    ",
+							"    pm.test(\"Response has a body in json format\", function () {",
+							"        pm.expect(response.json()).not.eql(null);",
+							"    });",
+							"    ",
+							"    pm.test('Response matches the required schema', function() {",
+							"        valid = tv4.validate(response.json(), loginReturnSchema, false, true);",
+							"        if (!valid) console.log(tv4.error);",
+							"        pm.expect(valid).to.be.true;",
+							"    ",
+							"    });",
+							"    ",
+							"    pm.test(\"Response contains a success message\", function () {",
+							"        let jsonData = response.json();",
+							"        pm.expect(jsonData.resultCode).eql(120);",
+							"    ",
+							"        pm.expect(jsonData.message).not.eql(null);",
+							"        pm.expect(jsonData.message).to.contain(\"User logged in successfully\");",
+							"        pm.expect(jsonData.sessionID).not.to.eql(null);",
+							"        pm.variables.set(\"sessionID\", jsonData.sessionID);",
+							"        ",
+							"    });",
+							"    ",
+							"    pm.test(\"Response time is less than 1000ms\", function () {",
+							"        pm.expect(response.responseTime).to.be.below(1000);",
+							"    });",
+							"}",
+							"",
+							"(report = (n) => {",
+							"    if (n < 0) return endPointTests(null);",
+							"    else  setTimeout(()=>{",
+							"        pm.sendRequest(requestBuilder(\"/api/g/report\", \"GET\", transactionId, pm.variables.get(\"email\"), pm.variables.get(\"sessionID\"),{}), (err, res) => {",
+							"                if (res.code == 204) report(n-1);",
+							"                else endPointTests(res)",
+							"        });",
+							"    }, requestDelay || 500)",
+							"})(numOfPulls);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b67c0121-e2b8-4e4e-9669-788a698e1672",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\":\"{{email}}\",\n\t\"password\":{{password}}\n}"
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/api/g/idm/login",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"g",
+						"idm",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Shopping cart item2 inserted successfully",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2ad5a786-e956-4eba-b4f9-5c1cb7be4c2e",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.expect(pm.response.code).eql(204);",
+							"});",
+							"    ",
+							"pm.test(\"Response contains a transactionID\", function () {",
+							"    pm.response.to.have.header(\"transactionID\");",
+							"});",
+							"",
+							"pm.test(\"Response contains a sessionID\", function () {",
+							"    pm.response.to.have.header(\"sessionID\");",
+							"});",
+							"",
+							"let transactionId = pm.response.headers.get(\"transactionID\");",
+							"let requestDelay = pm.response.headers.get(\"requestDelay\");",
+							"pm.variables.unset(\"sessionID\");",
+							"pm.variables.set(\"sessionID\", pm.response.headers.get(\"sessionID\"));",
+							"",
+							"pm.test(\"Response body should be empty\", function () {",
+							"    pm.response.to.not.be.withBody;",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 500ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);",
+							"});",
+							"",
+							"endPointTests = (response) => {",
+							"    pm.test(\"Status code is 200\", function () {",
+							"        pm.expect(response.code).eql(200);",
+							"    });",
+							"    ",
+							"    pm.test(\"Response has a body in json format\", function () {",
+							"        pm.expect(response.json()).not.eql(null);",
+							"    });",
+							"    ",
+							"pm.test('Response matches the required schema', () => {",
+							"    pm.expect(tv4.validate(response.json(), standardReturnSchema, false, true)).to.be.true;",
+							"});",
+							"",
+							"pm.test(\"Response contains a success message\", () => {",
+							"    let jsonData = response.json();",
+							"    pm.expect(jsonData.resultCode).eql(3100);",
+							"",
+							"    pm.expect(jsonData.message).not.eql(null);",
+							"    pm.expect(jsonData.message).to.contain(\"Shopping cart item inserted successfully\");",
+							"     ",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1000ms\", function () {",
+							"    pm.expect(response.responseTime).to.be.below(1000);",
+							"});",
+							"}",
+							"",
+							"(report = (n) => {",
+							"    if (n < 0) return endPointTests(null);",
+							"    else  setTimeout(()=>{",
+							"        pm.sendRequest(requestBuilder(\"/api/g/report\", \"GET\", transactionId, pm.variables.get(\"email\"), pm.variables.get(\"sessionID\"),{}), (err, res) => {",
+							"                if (res.code == 204) report(n-1);",
+							"                else endPointTests(res)",
+							"        });",
+							"    }, requestDelay || 500)",
+							"})(numOfPulls);",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "email",
+						"value": "{{email}}",
+						"type": "text"
+					},
+					{
+						"key": "sessionID",
+						"value": "{{sessionID}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \n   \"email\": \"{{email}}\",\n   \"movieId\": {{movie2}},\n   \"quantity\": {{quantity2}}\n} \n"
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/api/g/billing/cart/insert",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"g",
+						"billing",
+						"cart",
+						"insert"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Shopping cart retrieved successfully",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2ad5a786-e956-4eba-b4f9-5c1cb7be4c2e",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.expect(pm.response.code).eql(204);",
+							"});",
+							"    ",
+							"pm.test(\"Response contains a transactionID\", function () {",
+							"    pm.response.to.have.header(\"transactionID\");",
+							"});",
+							"",
+							"pm.test(\"Response contains a sessionID\", function () {",
+							"    pm.response.to.have.header(\"sessionID\");",
+							"});",
+							"",
+							"let transactionId = pm.response.headers.get(\"transactionID\");",
+							"let requestDelay = pm.response.headers.get(\"requestDelay\");",
+							"pm.variables.unset(\"sessionID\");",
+							"pm.variables.set(\"sessionID\", pm.response.headers.get(\"sessionID\"));",
+							"",
+							"pm.test(\"Response body should be empty\", function () {",
+							"    pm.response.to.not.be.withBody;",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 500ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);",
+							"});",
+							"",
+							"endPointTests = (response) => {",
+							"    pm.test(\"Status code is 200\", function () {",
+							"        pm.expect(response.code).eql(200);",
+							"    });",
+							"    ",
+							"    pm.test(\"Response has a body in json format\", function () {",
+							"        pm.expect(response.json()).not.eql(null);",
+							"    });",
+							"    ",
+							"pm.test('Response matches the required schema', () => {",
+							"    pm.expect(tv4.validate(response.json(), cartReturnSchema, false, true)).to.be.true;",
+							"});",
+							"",
+							"pm.test(\"Response contains a success message\", () => {",
+							"    let jsonData = response.json();",
+							"    pm.expect(jsonData.resultCode).eql(3130);",
+							"",
+							"    pm.expect(jsonData.message).not.eql(null);",
+							"    pm.expect(jsonData.message).to.contain(\"Shopping cart retrieved successfully\");",
+							"});",
+							"",
+							"pm.test(\"Response contains correct data\", () => {",
+							"    let jsonData = response.json();",
+							"    targetItems = [{'movieId': JSON.parse(pm.variables.get(\"movie1\")), 'email': pm.variables.get(\"email\"), 'quantity': JSON.parse(pm.variables.get(\"quantity1\"))},",
+							"    {'movieId': JSON.parse(pm.variables.get(\"movie2\")), 'email': pm.variables.get(\"email\"), 'quantity': JSON.parse(pm.variables.get(\"quantity2\"))}]",
+							"    console.log(targetItems);",
+							"    pm.expect(jsonData.items.length).eql(targetItems.length);",
+							"    ",
+							"    jsonData.items.sort(dynamicSort(\"movieId\"));",
+							"    targetItems.sort(dynamicSort(\"movieId\"));",
+							"    ",
+							"    for (i = 0; i< targetItems.length; i++){",
+							"        pm.expect(jsonData.items[i].movieId).eql(targetItems[i].movieId);",
+							"        pm.expect(jsonData.items[i].email).eql(pm.variables.get(\"email\"));",
+							"        pm.expect(jsonData.items[i].quantity).eql(targetItems[i].quantity); ",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1000ms\", function () {",
+							"    pm.expect(response.responseTime).to.be.below(1000);",
+							"});",
+							"}",
+							"",
+							"(report = (n) => {",
+							"    if (n < 0) return endPointTests(null);",
+							"    else  setTimeout(()=>{",
+							"        pm.sendRequest(requestBuilder(\"/api/g/report\", \"GET\", transactionId, pm.variables.get(\"email\"), pm.variables.get(\"sessionID\"),{}), (err, res) => {",
+							"                if (res.code == 204) report(n-1);",
+							"                else endPointTests(res)",
+							"        });",
+							"    }, requestDelay || 500)",
+							"})(numOfPulls);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "email",
+						"value": "{{email}}",
+						"type": "text"
+					},
+					{
+						"key": "sessionID",
+						"value": "{{sessionID}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \n   \"email\": \"{{email}}\"\n}\n"
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/api/g/billing/cart/retrieve",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"g",
+						"billing",
+						"cart",
+						"retrieve"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Order placed successfully",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2ad5a786-e956-4eba-b4f9-5c1cb7be4c2e",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.expect(pm.response.code).eql(204);",
+							"});",
+							"    ",
+							"pm.test(\"Response contains a transactionID\", function () {",
+							"    pm.response.to.have.header(\"transactionID\");",
+							"});",
+							"",
+							"pm.test(\"Response contains a sessionID\", function () {",
+							"    pm.response.to.have.header(\"sessionID\");",
+							"});",
+							"",
+							"let transactionId = pm.response.headers.get(\"transactionID\");",
+							"let requestDelay = pm.response.headers.get(\"requestDelay\");",
+							"pm.variables.unset(\"sessionID\");",
+							"pm.variables.set(\"sessionID\", pm.response.headers.get(\"sessionID\"));",
+							"",
+							"pm.test(\"Response body should be empty\", function () {",
+							"    pm.response.to.not.be.withBody;",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 500ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);",
+							"});",
+							"",
+							"endPointTests = (response) => {",
+							"    pm.test(\"Status code is 200\", function () {",
+							"        pm.expect(response.code).eql(200);",
+							"    });",
+							"    ",
+							"    pm.test(\"Response has a body in json format\", function () {",
+							"        pm.expect(response.json()).not.eql(null);",
+							"    });",
+							"    ",
+							"pm.test('Response matches the required schema', () => {",
+							"    pm.expect(tv4.validate(response.json(), orderReturnSchema, false, true)).to.be.true;",
+							"});",
+							"",
+							"pm.test(\"Response contains a success message\", () => {",
+							"    let jsonData = response.json();",
+							"    pm.expect(jsonData.resultCode).eql(3400);",
+							"",
+							"    pm.expect(jsonData.message).not.eql(null);",
+							"    pm.expect(jsonData.message).to.contain(\"Order placed successfully\");",
+							"     ",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1000ms\", function () {",
+							"    pm.expect(response.responseTime).to.be.below(1000);",
+							"});",
+							"}",
+							"",
+							"(report = (n) => {",
+							"    if (n < 0) return endPointTests(null);",
+							"    else  setTimeout(()=>{",
+							"        pm.sendRequest(requestBuilder(\"/api/g/report\", \"GET\", transactionId, pm.variables.get(\"email\"), pm.variables.get(\"sessionID\"),{}), (err, res) => {",
+							"                if (res.code == 204) report(n-1);",
+							"                else endPointTests(res)",
+							"        });",
+							"    }, requestDelay || 500)",
+							"})(numOfPulls);",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "email",
+						"value": "{{email}}",
+						"type": "text"
+					},
+					{
+						"key": "sessionID",
+						"value": "{{sessionID}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \n   \"email\": \"{{email}}\"\n} \n"
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/api/g/billing/order/place",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"g",
+						"billing",
+						"order",
+						"place"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify Shopping Cart to be Empty",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2ad5a786-e956-4eba-b4f9-5c1cb7be4c2e",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.expect(pm.response.code).eql(204);",
+							"});",
+							"    ",
+							"pm.test(\"Response contains a transactionID\", function () {",
+							"    pm.response.to.have.header(\"transactionID\");",
+							"});",
+							"",
+							"pm.test(\"Response contains a sessionID\", function () {",
+							"    pm.response.to.have.header(\"sessionID\");",
+							"});",
+							"",
+							"let transactionId = pm.response.headers.get(\"transactionID\");",
+							"let requestDelay = pm.response.headers.get(\"requestDelay\");",
+							"pm.variables.unset(\"sessionID\");",
+							"pm.variables.set(\"sessionID\", pm.response.headers.get(\"sessionID\"));",
+							"",
+							"pm.test(\"Response body should be empty\", function () {",
+							"    pm.response.to.not.be.withBody;",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 500ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);",
+							"});",
+							"",
+							"",
+							"endPointTests = (response) => {",
+							"    pm.test(\"Status code is 200\", function () {",
+							"        pm.expect(response.code).eql(200);",
+							"    });",
+							"    ",
+							"    pm.test(\"Response has a body in json format\", function () {",
+							"        pm.expect(response.json()).not.eql(null);",
+							"    });",
+							"    ",
+							"pm.test('Response matches the required schema', () => {",
+							"    pm.expect(tv4.validate(response.json(), standardReturnSchema, false, true)).to.be.true;",
+							"});",
+							"",
+							"pm.test(\"Response contains an error message\", () => {",
+							"    let jsonData = response.json();",
+							"    pm.expect(jsonData.resultCode).eql(312);",
+							"",
+							"    pm.expect(jsonData.message).not.eql(null);",
+							"    pm.expect(jsonData.message).to.contain(\"Shopping item does not exist\");",
+							"     ",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1000ms\", function () {",
+							"    pm.expect(response.responseTime).to.be.below(1000);",
+							"});",
+							"}",
+							"",
+							"(report = (n) => {",
+							"    if (n < 0) return endPointTests(null);",
+							"    else  setTimeout(()=>{",
+							"        pm.sendRequest(requestBuilder(\"/api/g/report\", \"GET\", transactionId, pm.variables.get(\"email\"), pm.variables.get(\"sessionID\"),{}), (err, res) => {",
+							"                if (res.code == 204) report(n-1);",
+							"                else endPointTests(res)",
+							"        });",
+							"    }, requestDelay || 500)",
+							"})(numOfPulls);",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "email",
+						"value": "{{email}}",
+						"type": "text"
+					},
+					{
+						"key": "sessionID",
+						"value": "{{sessionID}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \n   \"email\": \"{{email}}\"\n} \n"
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/api/g/billing/cart/retrieve",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"g",
+						"billing",
+						"cart",
+						"retrieve"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Should not process billing with non-existing session",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2ad5a786-e956-4eba-b4f9-5c1cb7be4c2e",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).eql(200);",
+							"});",
+							"    ",
+							"pm.test(\"Response has a body in json format\", function () {",
+							"    pm.expect(pm.response.json()).not.eql(null);",
+							"});",
+							"    ",
+							"pm.test('Response matches the required schema', () => {",
+							"    pm.expect(tv4.validate(pm.response.json(), standardReturnSchema, false, true)).to.be.true;",
+							"});",
+							"",
+							"pm.test(\"Response contains an error message [Session Test]\", function () {",
+							"    let jsonData = pm.response.json();",
+							"    pm.expect(jsonData.resultCode).eql(134);",
+							"",
+							"    pm.expect(jsonData.message).not.eql(null);",
+							"    pm.expect(jsonData.message).to.contain(\"Session not found\");",
+							"    ",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "email",
+						"type": "text",
+						"value": "{{email}}"
+					},
+					{
+						"key": "sessionID",
+						"type": "text",
+						"value": "128afea5be8b902e2ec06ae03614cfc32fb6b700dd741b6719ec4ffb43b0c77492f0ac0172fd970cd15d0e1cd2af2259829c99696785a426c337e3ff271f71ce"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \n   \"email\": \"{{email}}\"\n} \n"
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/api/g/billing/order/place",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"g",
+						"billing",
+						"order",
+						"place"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Should process billing directly without api gateway",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2ad5a786-e956-4eba-b4f9-5c1cb7be4c2e",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).eql(200);",
+							"});",
+							"    ",
+							"pm.test(\"Response has a body in json format\", function () {",
+							"    pm.expect(pm.response.json()).not.eql(null);",
+							"});",
+							"    ",
+							"pm.test('Response matches the required schema', () => {",
+							"    pm.expect(tv4.validate(pm.response.json(), standardReturnSchema, false, true)).to.be.true;",
+							"});",
+							"",
+							"pm.test(\"Response contains an error message [APIGateway Test]\", () => {",
+							"    let jsonData = pm.response.json();",
+							"    pm.expect(jsonData.resultCode).eql(312);",
+							"",
+							"    pm.expect(jsonData.message).not.eql(null);",
+							"    pm.expect(jsonData.message).to.contain(\"Shopping item does not exist\");",
+							"     ",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "email",
+						"type": "text",
+						"value": "{{email}}"
+					},
+					{
+						"key": "sessionID",
+						"type": "text",
+						"value": "128afea5be8b902e2ec06ae03614cfc32fb6b700dd741b6719ec4ffb43b0c77492f0ac0172fd970cd15d0e1cd2af2259829c99696785a426c337e3ff271f71ce"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \n   \"email\": \"{{email}}\"\n} \n"
+				},
+				"url": {
+					"raw": "http://{{host}}:{{billingPort}}/api/billing/cart/retrieve",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{billingPort}}",
+					"path": [
+						"api",
+						"billing",
+						"cart",
+						"retrieve"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "17480490-3ec9-45bf-969b-ac3d886f59fd",
+				"type": "text/javascript",
+				"exec": [
+					"const possible = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\";",
+					"",
+					"randomInt = (start, end) => _.random(start, end);",
+					"randomString = (len) => {",
+					"    let string = \"\";",
+					"    for (var i = 0; i < len; i++)",
+					"        string += possible.charAt(randomInt(0, 61));",
+					"    return string;",
+					"};",
+					"randomDigit = (len) => {",
+					"    let string = \"\";",
+					"    for (var i = 0; i < len; i++)",
+					"        string += possible.charAt(randomInt(52, 61));",
+					"    return string;",
+					"};",
+					"",
+					"dynamicSort = (property) => {",
+					"    let sortOrder = 1;",
+					"    if(property[0] === \"-\") {",
+					"        sortOrder = -1;",
+					"        property = property.substr(1);",
+					"    }",
+					"    return (a,b) =>{",
+					"        return ((a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0) * sortOrder;",
+					"    }",
+					"};",
+					"",
+					"",
+					"host = ()=> pm.variables.get(\"host\");",
+					"port = ()=> pm.variables.get(\"port\");",
+					"requestBuilder = (api, method, transactionId, email, sessionId, payload) => {",
+					"return {",
+					"           url:  \"http://\"+host()+\":\"+port() + api, ",
+					"           method,",
+					"            header :{",
+					"            'Accept': 'application/json',",
+					"            'Content-Type': 'application/json',",
+					"            'transactionID': transactionId,",
+					"            'email':email,",
+					"            'sessionID':sessionId",
+					"            },",
+					"           body: {",
+					"               mode :\"raw\",",
+					"               raw: JSON.stringify(payload)",
+					"           }",
+					"       };",
+					"};",
+					"",
+					"",
+					"standardReturnSchema = {",
+					"    \"type\" : \"object\",",
+					"    \"properties\" : {",
+					"        \"resultCode\" : {",
+					"            \"type\" : \"number\"",
+					"        },",
+					"        \"message\" : {",
+					"            \"type\" : \"string\"",
+					"        }",
+					"    }",
+					"};",
+					"",
+					"loginReturnSchema = {",
+					"    \"type\" : \"object\",",
+					"    \"properties\" : {",
+					"        \"resultCode\" : {",
+					"            \"type\" : \"number\"",
+					"        },",
+					"        \"message\" : {",
+					"            \"type\" : \"string\"",
+					"        },",
+					"        \"sessionID\": {",
+					"            \"type\": \"string\"",
+					"        }",
+					"    }",
+					"};",
+					"",
+					"cartReturnSchema =  {",
+					"    \"type\" : \"object\",",
+					"    \"properties\" : {",
+					"        \"resultCode\" : {",
+					"            \"type\" : \"number\"",
+					"        },",
+					"        \"message\" : {",
+					"            \"type\" : \"string\"",
+					"        },",
+					"        \"items\" : {",
+					"            \"type\": \"array\",",
+					"            \"items\": {",
+					"                \"type\" : \"object\",",
+					"                \"properties\" : {",
+					"                    \"email\" : {",
+					"                        \"type\" :\"string\"",
+					"                    },",
+					"                    \"movieId\":{",
+					"                        \"type\" : \"string\"",
+					"                    },",
+					"                    \"quantity\" : {",
+					"                        \"type\" : \"number\"",
+					"                    }",
+					"                    ",
+					"                }",
+					"                ",
+					"            }",
+					"        }",
+					"    }",
+					"};",
+					"",
+					"creditcardReturnSchema =  {",
+					"    \"type\" : \"object\",",
+					"    \"properties\" : {",
+					"        \"resultCode\" : {",
+					"            \"type\" : \"number\"",
+					"        },",
+					"        \"message\" : {",
+					"            \"type\" : \"string\"",
+					"        },",
+					"        \"creditcard\" : {",
+					"            \"type\" : \"object\",",
+					"            \"properties\" : {",
+					"                \"id\" : {",
+					"                    \"type\" :\"string\"",
+					"                },",
+					"                \"firstName\":{",
+					"                    \"type\" : \"string\"",
+					"                },",
+					"                \"lastName\":{",
+					"                    \"type\" : \"string\"",
+					"                },",
+					"                \"expiration\" : {",
+					"                    \"type\" : \"string\"",
+					"                }",
+					"            }",
+					"        }",
+					"    }",
+					"};",
+					"customerReturnSchema = {",
+					"    \"type\" : \"object\",",
+					"    \"properties\" : {",
+					"        \"resultCode\" : {",
+					"            \"type\" : \"number\"",
+					"        },",
+					"        \"message\" : {",
+					"            \"type\" : \"string\"",
+					"        },",
+					"        \"customer\" : {",
+					"            \"type\" : \"object\",",
+					"            \"properties\" : {",
+					"                \"email\" : {",
+					"                    \"type\" :\"string\"",
+					"                },",
+					"                \"firstName\":{",
+					"                    \"type\" : \"string\"",
+					"                },",
+					"                \"lastName\":{",
+					"                    \"type\" : \"string\"",
+					"                },",
+					"                \"ccId\" : {",
+					"                    \"type\" : \"string\"",
+					"                },",
+					"                \"address\" : {",
+					"                    \"type\" : \"string\"",
+					"                }",
+					"            }",
+					"        }",
+					"    }",
+					"};",
+					"",
+					"orderReturnSchema = {",
+					"    \"type\" : \"object\",",
+					"    \"properties\" : {",
+					"        \"resultCode\" : {",
+					"            \"type\" : \"number\"",
+					"        },",
+					"        \"message\" : {",
+					"            \"type\" : \"string\"",
+					"        },",
+					"        \"redirectURL\": {",
+					"            \"type\" : \"string\"",
+					"        },",
+					"",
+					"        \"token\":{",
+					"            \"type\" : \"string\"",
+					"        }",
+					"    }",
+					"};",
+					"numOfPulls = 6"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "b35e873e-9364-4610-96fe-685a34a389cf",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

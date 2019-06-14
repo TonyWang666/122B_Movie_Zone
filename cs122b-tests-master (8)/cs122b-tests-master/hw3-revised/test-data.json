@@ -1,0 +1,23 @@
+[
+  {
+    "email": "existing1@existing.com",
+    "sessionID": "94275b25c8ded70cab5e1c648a1574e9ad602be0b3b7bfe384f85760b9578a82805aa801ce214003e6eb9a1fda885dee11364339c55f8142c73865d9857ed6f1",
+    "adminEmail": "admin@existing.com",
+    "adminSessionID": "36550cb2b40d0b1a40fae8357a69e3f81735fcb739182377d6ec41c6b6e26174f491f2c02423d492f95a823319cc071145a624771b4fcdaa549adc22f93d4eeb",
+    "searchTitle": "The Dark Knight",
+    "searchGenre": "Action",
+    "limit": 10,
+    "offset": 0,
+    "orderBy": "title",
+    "direction": "asc",
+    "limit2": 5,
+    "offset2": 10,
+    "orderBy2": "rating",
+    "direction2": "desc",
+    "noFoundSearchTitle": "NOFOUNDMOVIE",
+    "titleSearchMovieData": "[{\"movieId\":\"tt0468569\",\"title\":\"The Dark Knight\",\"director\":\"Christopher Nolan\",\"year\":2008,\"rating\":9.0,\"numVotes\":1855106}]",
+    "genreSearchMovieData": "[{\"movieId\":\"tt0296574\",\"title\":\"Company\",\"director\":\"Ram Gopal Varma\",\"year\":2002,\"rating\":8.0,\"numVotes\":11533},{\"movieId\":\"tt0490964\",\"title\":\"Hat Trick\",\"director\":\"Jason McAfee\",\"year\":2005,\"rating\":8.0,\"numVotes\":76},{\"movieId\":\"tt0375878\",\"title\":\"Kaakha..Kaakha: The Police\",\"director\":\"Gautham Menon\",\"year\":2003,\"rating\":8.0,\"numVotes\":3546},{\"movieId\":\"tt0378194\",\"title\":\"Kill Bill: Vol. 2\",\"director\":\"Quentin Tarantino\",\"year\":2004,\"rating\":8.0,\"numVotes\":559953},{\"movieId\":\"tt0455829\",\"title\":\"Vettaiyaadu Vilaiyaadu\",\"director\":\"Gautham Menon\",\"year\":2006,\"rating\":8.0,\"numVotes\":4745},{\"movieId\":\"tt0425112\",\"title\":\"Hot Fuzz\",\"director\":\"Edgar Wright\",\"year\":2007,\"rating\":7.9,\"numVotes\":388556},{\"movieId\":\"tt0284935\",\"title\":\"Manhunt\",\"director\":\"Ezio Massa\",\"year\":2002,\"rating\":7.9,\"numVotes\":38},{\"movieId\":\"tt0453190\",\"title\":\"Raam\",\"director\":\"Ameer Sultan\",\"year\":2005,\"rating\":7.9,\"numVotes\":844},{\"movieId\":\"tt0379786\",\"title\":\"Serenity\",\"director\":\"Joss Whedon\",\"year\":2005,\"rating\":7.9,\"numVotes\":256241},{\"movieId\":\"tt0422320\",\"title\":\"Ghilli\",\"director\":\"Dharani\",\"year\":2004,\"rating\":7.8,\"numVotes\":6136}]",
+    "addMovieGenres": "[{\"id\": 9, \"name\": \"drama\"}]",
+    "addGenreArray": "[9]"
+  }
+]
